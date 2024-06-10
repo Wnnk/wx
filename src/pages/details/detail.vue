@@ -52,7 +52,7 @@
       <view class="sku-wrap">
         <view class="choose-info">
           <h3 class="sku-title">已选</h3>
-          <span class="choose-name">{{detail.choose[0].name}}</span>
+          <span class="choose-name" @click="changeChooseStatus">{{detail.choose[0].name}}</span>
         </view>
         <view class="service"></view>
       </view>
@@ -60,8 +60,8 @@
       <view class="detail-transfer">
         <view class="transfer-row">
           <span class="transfer-title">送至</span>
-          <view class="transfer-content">
-            <p class="transfer-address">|| 北京朝阳区三环</p>
+          <view class="transfer-content" @click="changeAddressStatus">
+            <p class="transfer-address">{{address}}</p>
           </view>
         </view>
         <view class="service"></view>
@@ -74,32 +74,54 @@
         </view>
       </view>
     </view>
-    <chooseFeeds></chooseFeeds>
+    <chooseFeeds :choose="detail.choose" v-show="isShowChoose" :changeChooseStatus="changeChooseStatus"></chooseFeeds>
+    <chooseAddress 
+      v-show="isShowAddress" 
+      :changeAddressStatus="changeAddressStatus" 
+      :address="address" 
+      :upaddress="upaddress"
+    />
   </view>
 </template>
 
 <script>
 import {getDetail} from '../../api/Data'
-import chooseFeeds from './chooseFeeds.vue';
+import chooseFeeds from './chooseFeeds.vue'
+import chooseAddress from './chooseAddress.vue'
+
 export default {
   data() {
     return {
       detail: {},
+      isShowChoose: false,
+      isShowAddress: false,
+      address:'福建福州市长乐区',
     }
   },
   components: {
     chooseFeeds,
+    chooseAddress
   },
   onLoad(option) {
     const { id } = option;
     getDetail(id).then(res => {
       this.detail = res;
       console.log(this.detail.choose[0],this.detail.choose[0].name)
-    })
-   
+    });
   },
   methods: {
-    
+    changeChooseStatus(event) {
+      event.stopPropagation()
+      this.isShowChoose = !this.isShowChoose;
+    },
+    changeAddressStatus(event) {
+      event.stopPropagation()
+      this.isShowAddress = !this.isShowAddress;
+    },
+    upaddress(data) {
+      this.address = data;
+    }
+
   },
 }
 </script>
